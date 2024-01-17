@@ -4,6 +4,7 @@ from __future__ import annotations
 import logging
 import os
 from typing import Any, Optional
+from functools import reduce
 
 import requests
 
@@ -63,9 +64,9 @@ def query_with_pagination(
         payload = {"query": query, "variables": {cursor_variable_name: end_cursor}}
         data = request_github(payload)
         return_value.append(data)
-        subobject = data
-        for key in page_info_path:
-            subobject = subobject[key]
-        end_cursor = subobject["pageInfo"]["endCursor"]
-        has_next_page = subobject["pageInfo"]["hasNextPage"]
+        pagination = reduce(
+                    lambda d, key: d[key], page_info_path, data
+                )  # reduce(function, sequence to go through, initial)
+        end_cursor = pagination["pageInfo"]["endCursor"]
+        has_next_page = pagination["pageInfo"]["hasNextPage"]
     return return_value
