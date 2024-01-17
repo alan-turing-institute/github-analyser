@@ -65,7 +65,12 @@ def query_with_pagination(
         return_value.append(data)
         subobject = data
         for key in page_info_path:
-            subobject = subobject[key]
+            try:
+                subobject = subobject[key]
+            except KeyError:
+                raise KeyError(
+                    f'Could not find page info path "{key}" in response {subobject}.'
+                )
         end_cursor = subobject["pageInfo"]["endCursor"]
         has_next_page = subobject["pageInfo"]["hasNextPage"]
         if max_pages is not None and page_counter >= max_pages:
