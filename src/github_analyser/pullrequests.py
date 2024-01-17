@@ -71,5 +71,6 @@ def get_pull_requests():
 
 if __name__ == "__main__":
     data = get_pull_requests()
-    with open("pullrequests.json", "w") as f:
-        json.dump(data, f)
+    data_nodes  = [edge["node"] for datum in data for edge in datum["data"]["repository"]["pullRequests"]["edges"]]
+    df = pd.json_normalize(data_nodes)
+    df.to_csv("data/pull_requests.csv")
