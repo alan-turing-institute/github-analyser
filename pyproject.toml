@@ -1,6 +1,7 @@
 [build-system]
 requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
+
 [project]
 name = "github-analyser"
 version = "0.1.0"  # need to also update version in src/github_analyser/__init__.py
@@ -46,13 +47,6 @@ Homepage = "https://github.com/alan-turing-institute/github-analyser"
 Discussions = "https://github.com/alan-turing-institute/github-analyser/discussions"
 Changelog = "https://github.com/alan-turing-institute/github-analyser/releases"
 
-
-[tool.hatch]
-version.path = "src/github_analyser/__init__.py"
-envs.default.dependencies = [
-  "pytest",
-  "pytest-cov",
-]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
@@ -113,6 +107,13 @@ select = [
 extend-ignore = [
   "PLR",    # Design related pylint codes
   "E501",   # Line too long
+]
+
+[tool.hatch]
+version.path = "src/github_analyser/__init__.py"
+envs.default.dependencies = [
+  "pytest",
+  "pytest-cov",
 ]
 
 src = ["src"]
