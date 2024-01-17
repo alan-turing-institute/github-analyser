@@ -1,0 +1,14 @@
+# Changes here will be overwritten by Copier
+_commit: 24a403c
+_src_path: gh:alan-turing-institute/python-project-template
+backend: setuptools
+email: opensource-reg@turing.ac.uk
+full_name: REG Open Source Service Area
+license: MIT
+org: alan-turing-institute
+pip_name: github_analyser
+project_name: github-analyser
+project_short_description: ''
+python_version_range: '>=3.8'
+typing: loose
+url: https://github.com/alan-turing-institute/github-analyser
