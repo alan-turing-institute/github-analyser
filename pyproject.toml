@@ -29,7 +29,9 @@ classifiers = [
   "Typing :: Typed",
 ]
 
-dependencies = []
+dependencies = [
+    "requests ~= 2.27"
+]
 
 [project.optional-dependencies]
 test = [

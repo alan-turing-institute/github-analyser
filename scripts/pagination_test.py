@@ -1,15 +1,12 @@
-"""Testing paging using the issues query."""
-import os
+from __future__ import annotations
 
-import requests
+import logging
+
+from github_analyser.utils import query_with_pagination
 
 
 def main():
-    github_token = os.environ["GITHUB_TOKEN"]
-
-    # Define the headers for the request
-    headers = {"Authorization": f"Bearer {github_token}"}
-
+    logging.basicConfig(level=logging.DEBUG)
     query = """
     query ($issues_end_cursor: String) {
       repository(owner: "alan-turing-institute", name: "DTBase") {
@@ -55,32 +52,16 @@ def main():
       }
     }
     """
-
-    url = "https://api.github.com/graphql"
-    issues_has_next_page = True
-    issues_end_cursor = None
-    while issues_has_next_page:
-        payload = {
-            "query": query,
-            "variables": {
-                "issues_end_cursor": issues_end_cursor,
-            },
-        }
-        response = requests.post(url, json=payload, headers=headers)
-        data = response.json()
-
-        # Extract the repositories
-        issues = data["data"]["repository"]["issues"]["edges"]
-
+    data = query_with_pagination(
+        query,
+        page_info_path=["data", "repository", "issues"],
+        cursor_variable_name="issues_end_cursor",
+    )
+    for page in data:
+        issues = page["data"]["repository"]["issues"]["edges"]
         print("\nNext 10 issues:")
         for issue in issues:
             print(issue["node"])
-        issues_end_cursor = data["data"]["repository"]["issues"]["pageInfo"][
-            "endCursor"
-        ]
-        issues_has_next_page = data["data"]["repository"]["issues"]["pageInfo"][
-            "hasNextPage"
-        ]
 
 
 if __name__ == "__main__":
