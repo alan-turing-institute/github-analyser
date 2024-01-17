@@ -32,7 +32,7 @@ def request_github(payload: Any, headers: Optional[Any] = None) -> Any:
 
 
 def query_with_pagination(
-    query, page_info_path=None, cursor_variable_name="pagination_cursor"
+    query, page_info_path=None, cursor_variable_name="pagination_cursor", max_pages=None
 ) -> list[Any]:
     """Run a query with pagination.
 
@@ -68,4 +68,7 @@ def query_with_pagination(
             subobject = subobject[key]
         end_cursor = subobject["pageInfo"]["endCursor"]
         has_next_page = subobject["pageInfo"]["hasNextPage"]
+        if max_pages is not None and page_counter >= max_pages:
+            logging.warning(f"Reached maximum number of pages {max_pages}.")
+            break
     return return_value
