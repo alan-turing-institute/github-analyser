@@ -6,8 +6,6 @@ def fetch_commits(repo_owner, repo_name, total_commits_to_fetch=20):
     github_token = os.environ["GITHUB_TOKEN"]
     headers = {"Authorization": f"Bearer {github_token}"}
 
-    # Corrected GraphQL query for commit history
-    # Using f-string for query
     query_template = """
         query ($afterCursor: String) {
             repository(owner: "%s", name: "%s") {
