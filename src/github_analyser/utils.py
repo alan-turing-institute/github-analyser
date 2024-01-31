@@ -3,14 +3,15 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import Any, Optional
+from functools import reduce
+from typing import Any
 
 import requests
 
 GITHUB_API_URL = "https://api.github.com/graphql"
 
 
-def request_github(payload: Any, headers: Optional[Any] = None) -> Any:
+def request_github(payload: Any, headers: Any | None = None) -> Any:
     """Run an autheticated query against the GitHub API.
 
     Assumes that the GitHub token is set in the environment variable GITHUB_TOKEN.
@@ -27,12 +28,13 @@ def request_github(payload: Any, headers: Optional[Any] = None) -> Any:
     headers = headers | {"Authorization": f"Bearer {github_token}"}
     response = requests.post(GITHUB_API_URL, json=payload, headers=headers)
     if response.status_code != 200:
-        raise Exception(f"GitHub query failed by code {response.status_code}.")
+        msg = f"GitHub query failed by code {response.status_code}."
+        raise Exception(msg)
     return response.json()
 
 
 def query_with_pagination(
-    query, page_info_path=None, cursor_variable_name="pagination_cursor"
+    query, page_info_path=None, cursor_variable_name="pagination_cursor", max_pages=None
 ) -> list[Any]:
     """Run a query with pagination.
 
@@ -59,13 +61,22 @@ def query_with_pagination(
     page_counter = 0
     while has_next_page:
         page_counter += 1
-        logging.debug(f"Requesting page {page_counter}")
+        logging.debug("Requesting page %s", page_counter)
         payload = {"query": query, "variables": {cursor_variable_name: end_cursor}}
         data = request_github(payload)
         return_value.append(data)
-        subobject = data
-        for key in page_info_path:
-            subobject = subobject[key]
-        end_cursor = subobject["pageInfo"]["endCursor"]
-        has_next_page = subobject["pageInfo"]["hasNextPage"]
+        try:
+            pagination = reduce(
+                lambda d, key: d[key], page_info_path, data
+            )  # reduce(function, sequence to go through, initial)
+        except KeyError as e:
+            msg = (
+                f'Could not find page info path "{page_info_path}" in response {data}.'
+            )
+            raise KeyError(msg) from e
+        end_cursor = pagination["pageInfo"]["endCursor"]
+        has_next_page = pagination["pageInfo"]["hasNextPage"]
+        if max_pages is not None and page_counter >= max_pages:
+            logging.warning("Reached maximum number of pages %s.", max_pages)
+            break
     return return_value
