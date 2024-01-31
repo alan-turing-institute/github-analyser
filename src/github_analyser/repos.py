@@ -46,5 +46,4 @@ def get_repos():
     ]
     flattened_edges = sum(edges, [])
     nodes = [x["node"] for x in flattened_edges]
-    df = pd.DataFrame(nodes)
-    return df
+    return pd.DataFrame(nodes)

@@ -42,6 +42,7 @@ test = [
 dev = [
   "pytest >=6",
   "pytest-cov >=3",
+  "mypy ~= 1.8",
 ]
 
 [project.urls]
@@ -82,6 +83,7 @@ disallow_untyped_defs = false
 disallow_incomplete_defs = false
 check_untyped_defs = true
 strict = false
+ignore_missing_imports = true
 
 
 [tool.ruff]
