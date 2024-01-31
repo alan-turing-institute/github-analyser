@@ -1,5 +1,7 @@
 from functools import reduce
 
+import pandas as pd
+
 from github_analyser.utils import query_with_pagination
 
 repos_query = """
@@ -44,4 +46,5 @@ def get_repos():
     ]
     flattened_edges = sum(edges, [])
     nodes = [x["node"] for x in flattened_edges]
-    return nodes
+    df = pd.DataFrame(nodes)
+    return df
