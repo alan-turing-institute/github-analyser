@@ -7,7 +7,6 @@ from github_analyser.utils import query_with_pagination
 
 
 def get_pull_requests_data():
-    os.environ["GITHUB_TOKEN"]
 
     # Define the headers for the request
 
