@@ -4,7 +4,7 @@ from github_analyser.utils import query_with_pagination
 
 def fetch_commits(repo_owner: str, repo_name: str, total_commits_to_fetch=20, 
                   save_csv=False, csv_path='commits.csv') -> pd.DataFrame:
-    """Fetch info about commits from a GitHub repository.
+    """Fetch info about commits from a GitHub repo.
     
     Args:
         repo_owner: The owner of the repository.
