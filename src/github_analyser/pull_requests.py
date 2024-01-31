@@ -1,16 +1,15 @@
 import os
-import json
 
+import numpy as np
 import pandas as pd
-import requests
 
 from github_analyser.utils import query_with_pagination
 
-def get_pull_requests():
-    github_token = os.environ["GITHUB_TOKEN"]
+
+def get_pull_requests_data():
+    os.environ["GITHUB_TOKEN"]
 
     # Define the headers for the request
-    headers = {"Authorization": f"Bearer {github_token}"}
 
     query = """
         query ($issues_end_cursor: String) {
@@ -66,11 +65,29 @@ def get_pull_requests():
     }
     """
 
-    data = query_with_pagination(query, ["data", "repository", "pullRequests"])
-    return data
+    return query_with_pagination(query, ["data", "repository", "pullRequests"])
+
+
+def get_pull_requests_df():
+    data = get_pull_requests_data()
+    data_nodes = [
+        edge["node"]
+        for datum in data
+        for edge in datum["data"]["repository"]["pullRequests"]["edges"]
+    ]
+    df = pd.json_normalize(data_nodes)
+    df["comments"] = df["comments.edges"].apply(get_authors)
+    df["reviews"] = df["reviews.edges"].apply(get_authors)
+    return df
+
+
+def get_authors(edge):
+    authors = [i["node"]["author"]["login"] for i in edge]
+    if len(authors) > 0:
+        return (", ").join(authors)
+    return np.nan
+
 
 if __name__ == "__main__":
-    data = get_pull_requests()
-    data_nodes  = [edge["node"] for datum in data for edge in datum["data"]["repository"]["pullRequests"]["edges"]]
-    df = pd.json_normalize(data_nodes)
+    df = get_pull_requests_df()
     df.to_csv("data/pull_requests.csv")
