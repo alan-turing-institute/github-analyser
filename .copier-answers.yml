@@ -8,7 +8,7 @@ license: MIT
 org: alan-turing-institute
 pip_name: github_analyser
 project_name: github-analyser
-project_short_description: ''
-python_version_range: '>=3.8'
+project_short_description: ""
+python_version_range: ">=3.8"
 typing: loose
 url: https://github.com/alan-turing-institute/github-analyser

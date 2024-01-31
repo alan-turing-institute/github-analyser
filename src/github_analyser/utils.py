@@ -33,7 +33,7 @@ def request_github(payload: Any, headers: Optional[Any] = None) -> Any:
 
 
 def query_with_pagination(
-    query, page_info_path=None, cursor_variable_name="pagination_cursor"
+    query, page_info_path=None, cursor_variable_name="pagination_cursor", max_pages=None
 ) -> list[Any]:
     """Run a query with pagination.
 
@@ -64,9 +64,17 @@ def query_with_pagination(
         payload = {"query": query, "variables": {cursor_variable_name: end_cursor}}
         data = request_github(payload)
         return_value.append(data)
-        pagination = reduce(
-                    lambda d, key: d[key], page_info_path, data
-                )  # reduce(function, sequence to go through, initial)
+        try:
+            pagination = reduce(
+                        lambda d, key: d[key], page_info_path, data
+                    )  # reduce(function, sequence to go through, initial)
+        except KeyError:
+            raise KeyError(
+                f'Could not find page info path "{page_info_path}" in response {data}.'
+            )
         end_cursor = pagination["pageInfo"]["endCursor"]
         has_next_page = pagination["pageInfo"]["hasNextPage"]
+        if max_pages is not None and page_counter >= max_pages:
+            logging.warning(f"Reached maximum number of pages {max_pages}.")
+            break
     return return_value

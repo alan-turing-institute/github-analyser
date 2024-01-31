@@ -1,5 +1,5 @@
 """
-github-analyser: 
+github-analyser:
 """
 from __future__ import annotations
 

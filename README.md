@@ -4,8 +4,6 @@
 [![PyPI version][pypi-version]][pypi-link]
 [![PyPI platforms][pypi-platforms]][pypi-link]
 
-
-
 ## Installation
 
 ```bash
@@ -13,6 +11,7 @@ python -m pip install github_analyser
 ```
 
 From source:
+
 ```bash
 git clone https://github.com/alan-turing-institute/github-analyser
 cd github-analyser
@@ -21,7 +20,6 @@ python -m pip install .
 
 ## Usage
 
-
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for instructions on how to contribute.
@@ -29,7 +27,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for instructions on how to contribute.
 ## License
 
 Distributed under the terms of the [MIT license](LICENSE).
-
 
 <!-- prettier-ignore-start -->
 [actions-badge]:            https://github.com/alan-turing-institute/github-analyser/workflows/CI/badge.svg
