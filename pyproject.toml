@@ -30,8 +30,8 @@ classifiers = [
 ]
 
 dependencies = [
-    "requests ~= 2.27"
-    "pandas ~= 2.2"
+    "requests ~= 2.27",
+    "pandas ~= 2.2",
 ]
 
 [project.optional-dependencies]
