@@ -105,7 +105,18 @@ def get_pull_requests_df(repo_name: str, save: bool = False):
 
 
 def get_authors(edge):
-    authors = [i["node"]["author"]["login"] for i in edge]
+    """
+    Get the authors from nested dictionary.
+
+    Args:
+        edge (list): A list of edges.
+
+    Returns:
+        str: A string containing a comma separated list of the names of the authors.
+    """
+    authors = [
+        i["node"]["author"].get("login", ":ghost:") for i in edge
+    ]  # allow for ghosts (how can i make this the emoji?)
     if len(authors) > 0:
         return (", ").join(authors)
     return ""
