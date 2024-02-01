@@ -1,6 +1,6 @@
 import pandas as pd
 
-from github_analyser.utils import query_with_pagination
+from github_analyser.utils import camel_to_snake, query_with_pagination
 
 
 def get_pull_requests_data(repo_name: str):
@@ -73,10 +73,7 @@ def get_pull_requests_data(repo_name: str):
     return query_with_pagination(query, ["data", "repository", "pullRequests"])
 
 
-def get_pull_requests_df(
-    repo_name: str,
-    save: bool = False
-):
+def get_pull_requests_df(repo_name: str, save: bool = False):
     """
     Retrieves pull requests data for a given repository and returns it as a pandas DataFrame.
 
@@ -98,6 +95,8 @@ def get_pull_requests_df(
     df["reviews"] = df["reviews_edges"].apply(get_authors)
     df.drop(columns=["comments_edges", "reviews_edges"], inplace=True)
 
+    # rename columns to snake case
+    df.rename(columns=camel_to_snake, inplace=True)
 
     if save:
         df.to_csv(f"data/{repo_name}/pull_requests.csv", index=False)
