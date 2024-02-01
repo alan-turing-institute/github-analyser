@@ -30,7 +30,7 @@ def get_repos():
     """Get all repositories from the Alan Turing Institute organisation on GitHub.
 
     Returns:
-        list: A list of dictionaries containing the repository name, id, url and last
+        pandas Dataframe: One row per repo, columns repository name, id, url and last
         updated date.
     """
     pages = query_with_pagination(
