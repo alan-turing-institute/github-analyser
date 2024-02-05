@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 from functools import reduce
 from typing import Any
 
@@ -80,3 +81,8 @@ def query_with_pagination(
             logging.warning("Reached maximum number of pages %s.", max_pages)
             break
     return return_value
+
+
+def camel_to_snake(name):
+    name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
+    return re.sub("([a-z0-9])([A-Z])", r"\1_\2", name).lower()
