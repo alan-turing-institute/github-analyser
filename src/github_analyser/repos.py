@@ -2,7 +2,7 @@ from functools import reduce
 
 import pandas as pd
 
-from github_analyser.utils import query_with_pagination
+from github_analyser.utils import camel_to_snake, query_with_pagination
 
 
 def _get_repos_query(org_name: str):
@@ -55,9 +55,11 @@ def get_repos(org_name: str, save: bool | str = False):
     flattened_edges = sum(edges, [])
     nodes = [x["node"] for x in flattened_edges]
     df = pd.DataFrame(nodes)
+    df.rename(columns=camel_to_snake, inplace=True)
 
     if save:
         if save is True:
             save = "data/repos.csv"
         df.to_csv(save, index=False)
+
     return df

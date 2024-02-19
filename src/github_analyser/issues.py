@@ -3,7 +3,7 @@ from functools import reduce
 
 import pandas as pd
 
-from github_analyser.utils import query_with_pagination
+from github_analyser.utils import camel_to_snake, query_with_pagination
 
 MAX_COMMENTS = 100
 MAX_LABELS = 10
@@ -120,6 +120,7 @@ def get_issues(org_name: str, repo_name: str, save: bool | str = False) -> pd.Da
     # TODO The columns all have a type of `object`, even though e.g. `createdAt` is a
     # date and `title` is a string.
     df = pd.DataFrame(nodes)
+    df.rename(columns=camel_to_snake, inplace=True)
 
     if save:
         if save is True:

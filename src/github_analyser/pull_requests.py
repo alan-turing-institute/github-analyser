@@ -114,6 +114,7 @@ def get_pull_requests(org_name: str, repo_name: str, save: bool | str = False):
     df.drop(columns=["comments_edges", "reviews_edges"], inplace=True)
 
     # rename columns to snake case
+    df.rename(columns={"author_login": "author"}, inplace=True)
     df.rename(columns=camel_to_snake, inplace=True)
 
     if save:

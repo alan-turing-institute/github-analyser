@@ -2,7 +2,7 @@ import math
 
 import pandas as pd
 
-from github_analyser.utils import query_with_pagination
+from github_analyser.utils import camel_to_snake, query_with_pagination
 
 
 def _get_commits_query(org_name: str, repo_name: str) -> str:
@@ -90,6 +90,7 @@ def get_commits(
         },
         inplace=True,
     )
+    df.rename(columns=camel_to_snake, inplace=True)
 
     if save:
         if save is True:
