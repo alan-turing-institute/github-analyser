@@ -1,4 +1,5 @@
 import math
+from typing import Optional
 
 import pandas as pd
 
@@ -40,7 +41,7 @@ def _get_commits_query(org_name: str, repo_name: str) -> str:
 def get_commits(
     org_name: str,
     repo_name: str,
-    total_commits_to_fetch=20,
+    total_commits_to_fetch: Optional[int] = None,
     save: bool | str = False,
 ) -> pd.DataFrame:
     """Fetch info about commits from a GitHub repository.
@@ -61,7 +62,11 @@ def get_commits(
             - date: The date of the commit.
     """
     query = _get_commits_query(org_name, repo_name)
-    max_pages_to_fetch = math.ceil(total_commits_to_fetch / 10)
+
+    if total_commits_to_fetch is not None:
+        max_pages_to_fetch = math.ceil(total_commits_to_fetch / 10)
+    else:
+        max_pages_to_fetch = None
 
     responses = query_with_pagination(
         query,
@@ -76,10 +81,11 @@ def get_commits(
             "edges"
         ]
         nodes.extend(edge["node"] for edge in edges)
-        if len(nodes) >= total_commits_to_fetch:
+        if total_commits_to_fetch is not None and len(nodes) >= total_commits_to_fetch:
             break
 
-    nodes = nodes[:total_commits_to_fetch]
+    if total_commits_to_fetch is not None:
+        nodes = nodes[:total_commits_to_fetch]
 
     df = pd.json_normalize(nodes, sep="_")
     df.rename(
