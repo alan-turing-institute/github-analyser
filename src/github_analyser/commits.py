@@ -1,3 +1,5 @@
+import math
+
 import pandas as pd
 
 from github_analyser.utils import query_with_pagination
@@ -56,10 +58,13 @@ def fetch_commits(
     }}
     """
 
+    max_pages_to_fetch = math.ceil(total_commits_to_fetch / 10)
+
     responses = query_with_pagination(
         query_template,
         ["data", "repository", "defaultBranchRef", "target", "history"],
         "afterCursor",
+        max_pages=max_pages_to_fetch,
     )
 
     nodes = []
@@ -70,6 +75,8 @@ def fetch_commits(
         nodes.extend(edge["node"] for edge in edges)
         if len(nodes) >= total_commits_to_fetch:
             break
+
+    nodes = nodes[:total_commits_to_fetch]
 
     df = pd.json_normalize(nodes, sep="_")
     df.rename(
