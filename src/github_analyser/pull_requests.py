@@ -3,7 +3,7 @@ import pandas as pd
 from github_analyser.utils import camel_to_snake, query_with_pagination
 
 
-def _get_pull_requests_data(org_name: str, repo_name: str):
+def _get_pull_requests_query(org_name: str, repo_name: str):
     """
     Retrieves pull requests data for a given repository.
 
@@ -12,10 +12,9 @@ def _get_pull_requests_data(org_name: str, repo_name: str):
         repo_name (str): The name of the repository.
 
     Returns:
-        dict: The pull requests data in json format.
-
+        str: The query string.
     """
-    query = f"""
+    return f"""
         query ($issues_end_cursor: String) {{
             repository(owner: "{org_name}", name: "{repo_name}") {{
                 pullRequests(first: 10, after: $issues_end_cursor, states: OPEN) {{
@@ -68,7 +67,23 @@ def _get_pull_requests_data(org_name: str, repo_name: str):
             }}
     }}
     """
-    return query_with_pagination(query, ["data", "repository", "pullRequests"])
+
+
+def _get_authors(edge):
+    """
+    Get the authors from nested dictionary.
+
+    Args:
+        edge (list): A list of edges.
+
+    Returns:
+        str: A string containing a comma separated list of the names of the authors.
+        Deleted authors are represented by pd.NA.
+    """
+    authors = [i["node"]["author"].get("login", pd.NA) for i in edge]
+    if len(authors) > 0:
+        return (", ").join(authors)
+    return ""
 
 
 def get_pull_requests(org_name: str, repo_name: str, save: bool | str = False):
@@ -84,7 +99,10 @@ def get_pull_requests(org_name: str, repo_name: str, save: bool | str = False):
     Returns:
         pandas.DataFrame: The DataFrame containing pull requests data.
     """
-    data = _get_pull_requests_data(org_name=org_name, repo_name=repo_name)
+    data = query_with_pagination(
+        _get_pull_requests_query(org_name=org_name, repo_name=repo_name),
+        ["data", "repository", "pullRequests"],
+    )
     data_nodes = [
         edge["node"]
         for datum in data
@@ -104,20 +122,3 @@ def get_pull_requests(org_name: str, repo_name: str, save: bool | str = False):
         df.to_csv(save, index=False)
 
     return df
-
-
-def _get_authors(edge):
-    """
-    Get the authors from nested dictionary.
-
-    Args:
-        edge (list): A list of edges.
-
-    Returns:
-        str: A string containing a comma separated list of the names of the authors.
-        Deleted authors are represented by pd.NA.
-    """
-    authors = [i["node"]["author"].get("login", pd.NA) for i in edge]
-    if len(authors) > 0:
-        return (", ").join(authors)
-    return ""

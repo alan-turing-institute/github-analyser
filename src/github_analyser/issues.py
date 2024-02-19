@@ -9,7 +9,7 @@ MAX_COMMENTS = 100
 MAX_LABELS = 10
 
 
-def _issues_query(org_name: str, repo_name: str) -> str:
+def _get_issues_query(org_name: str, repo_name: str) -> str:
     return f"""
 query ($pagination_cursor: String) {{
   repository(owner: "{org_name}", name: "{repo_name}") {{
@@ -82,7 +82,7 @@ def get_issues(org_name: str, repo_name: str, save: bool | str = False) -> pd.Da
     Returns:
         pandas Dataframe: One row per issue.
     """
-    query = _issues_query(org_name, repo_name)
+    query = _get_issues_query(org_name, repo_name)
     pages = query_with_pagination(
         query, page_info_path=["data", "repository", "issues"]
     )
