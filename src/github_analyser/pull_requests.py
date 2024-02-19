@@ -73,7 +73,7 @@ def _get_pull_requests_data(repo_name: str):
     return query_with_pagination(query, ["data", "repository", "pullRequests"])
 
 
-def get_pull_requests_df(repo_name: str, save: bool | str = False):
+def get_pull_requests(repo_name: str, save: bool | str = False):
     """
     Retrieves pull requests data for a given repository and returns it as a pandas DataFrame.
 

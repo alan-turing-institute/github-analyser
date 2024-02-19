@@ -5,7 +5,7 @@ import pandas as pd
 from github_analyser.utils import query_with_pagination
 
 
-def fetch_commits(
+def get_commits(
     repo_owner: str,
     repo_name: str,
     total_commits_to_fetch=20,
