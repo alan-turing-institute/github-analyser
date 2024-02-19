@@ -24,7 +24,8 @@ def request_github(payload: Any, headers: Any | None = None) -> Any:
     Returns:
         The response from the GitHub API as JSON.
     """
-    headers = headers if headers else {}
+    if headers is None:
+        headers = {}
     github_token = os.environ["GITHUB_TOKEN"]
     headers = headers | {"Authorization": f"Bearer {github_token}"}
     response = requests.post(GITHUB_API_URL, json=payload, headers=headers)
@@ -84,5 +85,6 @@ def query_with_pagination(
 
 
 def camel_to_snake(name):
+    """Convert a camel case string to snake case."""
     name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
     return re.sub("([a-z0-9])([A-Z])", r"\1_\2", name).lower()

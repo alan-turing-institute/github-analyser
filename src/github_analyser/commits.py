@@ -1,36 +1,15 @@
 import math
+from typing import Optional
 
 import pandas as pd
 
 from github_analyser.utils import camel_to_snake, query_with_pagination
 
 
-def fetch_commits(
-    repo_owner: str,
-    repo_name: str,
-    total_commits_to_fetch=20,
-    save_csv=False,
-    csv_path="commits.csv",
-) -> pd.DataFrame:
-    """Fetch info about commits from a GitHub repository.
-
-    Args:
-        repo_owner: The owner of the repository.
-        repo_name: The name of the repository.
-        total_commits_to_fetch: The total number of commits to fetch.
-
-    Returns:
-        A pandas DataFrame with the following columns:
-            - message: The commit message.
-            - additions: The number of additions in the commit.
-            - deletions: The number of deletions in the commit.
-            - author: The author of the commit.
-            - date: The date of the commit.
-    """
-
-    query_template = f"""
+def _get_commits_query(org_name: str, repo_name: str) -> str:
+    return f"""
     query ($afterCursor: String) {{
-        repository(owner: "{repo_owner}", name: "{repo_name}") {{
+        repository(owner: "{org_name}", name: "{repo_name}") {{
             defaultBranchRef {{
                 target {{
                     ... on Commit {{
@@ -58,10 +37,39 @@ def fetch_commits(
     }}
     """
 
-    max_pages_to_fetch = math.ceil(total_commits_to_fetch / 10)
+
+def get_commits(
+    org_name: str,
+    repo_name: str,
+    total_commits_to_fetch: Optional[int] = None,
+    save: bool | str = False,
+) -> pd.DataFrame:
+    """Fetch info about commits from a GitHub repository.
+
+    Args:
+        org_name: The owner of the repository.
+        repo_name: The name of the repository.
+        total_commits_to_fetch: The total number of commits to fetch.
+        save (bool | str, optional): If True, save the data to "data/commits.csv" or
+        specify a path. Defaults to False.
+
+    Returns:
+        A pandas DataFrame with the following columns:
+            - message: The commit message.
+            - additions: The number of additions in the commit.
+            - deletions: The number of deletions in the commit.
+            - author: The author of the commit.
+            - date: The date of the commit.
+    """
+    query = _get_commits_query(org_name, repo_name)
+
+    if total_commits_to_fetch is not None:
+        max_pages_to_fetch = math.ceil(total_commits_to_fetch / 10)
+    else:
+        max_pages_to_fetch = None
 
     responses = query_with_pagination(
-        query_template,
+        query,
         ["data", "repository", "defaultBranchRef", "target", "history"],
         "afterCursor",
         max_pages=max_pages_to_fetch,
@@ -73,10 +81,11 @@ def fetch_commits(
             "edges"
         ]
         nodes.extend(edge["node"] for edge in edges)
-        if len(nodes) >= total_commits_to_fetch:
+        if total_commits_to_fetch is not None and len(nodes) >= total_commits_to_fetch:
             break
 
-    nodes = nodes[:total_commits_to_fetch]
+    if total_commits_to_fetch is not None:
+        nodes = nodes[:total_commits_to_fetch]
 
     df = pd.json_normalize(nodes, sep="_")
     df.rename(
@@ -89,7 +98,9 @@ def fetch_commits(
     )
     df.rename(columns=camel_to_snake, inplace=True)
 
-    if save_csv:
-        df.to_csv(csv_path, index=False)
+    if save:
+        if save is True:
+            save = f"data/{repo_name}/commits.csv"
+        df.to_csv(save, index=False)
 
     return df
