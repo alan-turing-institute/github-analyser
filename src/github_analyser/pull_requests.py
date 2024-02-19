@@ -113,10 +113,9 @@ def _get_authors(edge):
 
     Returns:
         str: A string containing a comma separated list of the names of the authors.
+        Deleted authors are represented by pd.NA.
     """
-    authors = [
-        i["node"]["author"].get("login", ":ghost:") for i in edge
-    ]  # allow for ghosts (how can i make this the emoji?)
+    authors = [i["node"]["author"].get("login", pd.NA) for i in edge]
     if len(authors) > 0:
         return (", ").join(authors)
     return ""

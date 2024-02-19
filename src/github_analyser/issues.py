@@ -56,9 +56,17 @@ query ($pagination_cursor: String) {{
 
 
 def _author_login(node):
+    """Get the login of the author of a node.
+
+    Args:
+        node (dict): The node.
+
+    Returns:
+        str: The login of the author, or pd.NA if the author is None.
+    """
     author = node["author"]
     if author is None:
-        return None
+        return pd.NA
     return author["login"]
 
 
