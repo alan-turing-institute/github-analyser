@@ -79,6 +79,14 @@ def fetch_commits(
     nodes = nodes[:total_commits_to_fetch]
 
     df = pd.json_normalize(nodes, sep="_")
+    df.rename(
+        columns={
+            "messageHeadline": "message",
+            "author_name": "author",
+            "author_date": "date",
+        },
+        inplace=True,
+    )
     df.rename(columns=camel_to_snake, inplace=True)
 
     if save_csv:
