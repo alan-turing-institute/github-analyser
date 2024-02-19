@@ -9,7 +9,7 @@ MAX_COMMENTS = 100
 MAX_LABELS = 10
 
 
-def issues_query(repo_name: str) -> str:
+def _issues_query(repo_name: str) -> str:
     return f"""
 query ($pagination_cursor: String) {{
   repository(owner: "alan-turing-institute", name: "{repo_name}") {{
@@ -55,7 +55,7 @@ query ($pagination_cursor: String) {{
 """
 
 
-def author_login(node):
+def _author_login(node):
     author = node["author"]
     if author is None:
         return None
@@ -68,7 +68,7 @@ def get_issues(repo_name: str) -> pd.DataFrame:
     Returns:
         pandas Dataframe: One row per issue.
     """
-    query = issues_query(repo_name)
+    query = _issues_query(repo_name)
     pages = query_with_pagination(
         query, page_info_path=["data", "repository", "issues"]
     )
@@ -83,7 +83,7 @@ def get_issues(repo_name: str) -> pd.DataFrame:
     flattened_edges = sum(edges, [])
     nodes = [x["node"] for x in flattened_edges]
     for node in nodes:
-        node["author"] = author_login(node)
+        node["author"] = _author_login(node)
 
         if node["comments"]["totalCount"] > MAX_COMMENTS:
             logging.warning(
@@ -92,7 +92,7 @@ def get_issues(repo_name: str) -> pd.DataFrame:
                 MAX_COMMENTS,
             )
         node["comments"] = [
-            author_login(edge["node"]) for edge in node["comments"]["edges"]
+            _author_login(edge["node"]) for edge in node["comments"]["edges"]
         ]
 
         if node["labels"]["totalCount"] > MAX_LABELS:

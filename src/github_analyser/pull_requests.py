@@ -3,7 +3,7 @@ import pandas as pd
 from github_analyser.utils import camel_to_snake, query_with_pagination
 
 
-def get_pull_requests_data(repo_name: str):
+def _get_pull_requests_data(repo_name: str):
     """
     Retrieves pull requests data for a given repository.
 
@@ -84,15 +84,15 @@ def get_pull_requests_df(repo_name: str, save: bool = False):
     Returns:
         pandas.DataFrame: The DataFrame containing pull requests data.
     """
-    data = get_pull_requests_data(repo_name=repo_name)
+    data = _get_pull_requests_data(repo_name=repo_name)
     data_nodes = [
         edge["node"]
         for datum in data
         for edge in datum["data"]["repository"]["pullRequests"]["edges"]
     ]
     df = pd.json_normalize(data_nodes, sep="_")
-    df["comments"] = df["comments_edges"].apply(get_authors)
-    df["reviews"] = df["reviews_edges"].apply(get_authors)
+    df["comments"] = df["comments_edges"].apply(_get_authors)
+    df["reviews"] = df["reviews_edges"].apply(_get_authors)
     df.drop(columns=["comments_edges", "reviews_edges"], inplace=True)
 
     # rename columns to snake case
@@ -104,7 +104,7 @@ def get_pull_requests_df(repo_name: str, save: bool = False):
     return df
 
 
-def get_authors(edge):
+def _get_authors(edge):
     """
     Get the authors from nested dictionary.
 
