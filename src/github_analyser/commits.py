@@ -2,7 +2,7 @@ import math
 
 import pandas as pd
 
-from github_analyser.utils import query_with_pagination
+from github_analyser.utils import camel_to_snake, query_with_pagination
 
 
 def fetch_commits(
@@ -79,14 +79,7 @@ def fetch_commits(
     nodes = nodes[:total_commits_to_fetch]
 
     df = pd.json_normalize(nodes, sep="_")
-    df.rename(
-        columns={
-            "messageHeadline": "message",
-            "author_name": "author",
-            "author_date": "date",
-        },
-        inplace=True,
-    )
+    df.rename(columns=camel_to_snake, inplace=True)
 
     if save_csv:
         df.to_csv(csv_path, index=False)
