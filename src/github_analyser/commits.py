@@ -9,8 +9,7 @@ def fetch_commits(
     repo_owner: str,
     repo_name: str,
     total_commits_to_fetch=20,
-    save_csv=False,
-    csv_path="commits.csv",
+    save: bool | str = False,
 ) -> pd.DataFrame:
     """Fetch info about commits from a GitHub repository.
 
@@ -18,6 +17,8 @@ def fetch_commits(
         repo_owner: The owner of the repository.
         repo_name: The name of the repository.
         total_commits_to_fetch: The total number of commits to fetch.
+        save (bool | str, optional): If True, save the data to "data/commits.csv" or
+        specify a path. Defaults to False.
 
     Returns:
         A pandas DataFrame with the following columns:
@@ -88,7 +89,9 @@ def fetch_commits(
         inplace=True,
     )
 
-    if save_csv:
-        df.to_csv(csv_path, index=False)
+    if save:
+        if save is True:
+            save = f"data/{repo_name}/commits.csv"
+        df.to_csv(save, index=False)
 
     return df
