@@ -15,9 +15,9 @@ def _get_pull_requests_query(org_name: str, repo_name: str):
         str: The query string.
     """
     return f"""
-        query ($issues_end_cursor: String) {{
+        query ($pagination_cursor: String) {{
             repository(owner: "{org_name}", name: "{repo_name}") {{
-                pullRequests(first: 10, after: $issues_end_cursor, states: OPEN) {{
+                pullRequests(first: 10, after: $pagination_cursor) {{
                     pageInfo {{
                         endCursor
                         hasNextPage
@@ -42,12 +42,8 @@ def _get_pull_requests_query(org_name: str, repo_name: str):
                             closed
                             closedAt
                             createdAt
-                            lastEditedAt
                             merged
                             mergedAt
-                            mergedBy {{
-                                login
-                            }}
                             state
                             updatedAt
                             totalCommentsCount
@@ -99,9 +95,10 @@ def get_pull_requests(org_name: str, repo_name: str, save: bool | str = False):
     Returns:
         pandas.DataFrame: The DataFrame containing pull requests data.
     """
+    query = _get_pull_requests_query(org_name, repo_name)
     data = query_with_pagination(
-        _get_pull_requests_query(org_name=org_name, repo_name=repo_name),
-        ["data", "repository", "pullRequests"],
+        query,
+        page_info_path=["data", "repository", "pullRequests"],
     )
     data_nodes = [
         edge["node"]
