@@ -70,8 +70,13 @@ def _author_login(node):
     return author["login"]
 
 
-def get_issues(repo_name: str) -> pd.DataFrame:
+def get_issues(repo_name: str, save: bool | str = False) -> pd.DataFrame:
     """Get all issues from a repository.
+
+    Args:
+        repo_name (str): The name of the repository.
+        save (bool | str, optional): If True, save the data to
+        "data/{repo_name}/issues.csv" or specify a path. Defaults to False.
 
     Returns:
         pandas Dataframe: One row per issue.
@@ -110,6 +115,14 @@ def get_issues(repo_name: str) -> pd.DataFrame:
                 MAX_LABELS,
             )
         node["labels"] = [edge["node"]["name"] for edge in node["labels"]["edges"]]
+
     # TODO The columns all have a type of `object`, even though e.g. `createdAt` is a
     # date and `title` is a string.
-    return pd.DataFrame(nodes)
+    df = pd.DataFrame(nodes)
+
+    if save:
+        if save is True:
+            save = f"data/{repo_name}/issues.csv"
+        df.to_csv(save, index=False)
+
+    return df

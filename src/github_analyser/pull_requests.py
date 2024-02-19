@@ -73,13 +73,14 @@ def _get_pull_requests_data(repo_name: str):
     return query_with_pagination(query, ["data", "repository", "pullRequests"])
 
 
-def get_pull_requests_df(repo_name: str, save: bool = False):
+def get_pull_requests_df(repo_name: str, save: bool | str = False):
     """
     Retrieves pull requests data for a given repository and returns it as a pandas DataFrame.
 
     Args:
         repo_name (str): The name of the repository.
-        save (bool): Whether to save the DataFrame as a csv file.
+        save (bool | str, optional): If True, save the data to
+        "data/{repo_name}/pull_requests.csv" or specify a path. Defaults to False.
 
     Returns:
         pandas.DataFrame: The DataFrame containing pull requests data.
@@ -99,7 +100,9 @@ def get_pull_requests_df(repo_name: str, save: bool = False):
     df.rename(columns=camel_to_snake, inplace=True)
 
     if save:
-        df.to_csv(f"data/{repo_name}/pull_requests.csv", index=False)
+        if save is True:
+            save = f"data/{repo_name}/pull_requests.csv"
+        df.to_csv(save, index=False)
 
     return df
 

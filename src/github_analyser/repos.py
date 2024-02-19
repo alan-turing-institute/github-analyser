@@ -26,8 +26,12 @@ query ($pagination_cursor: String) {
 """
 
 
-def get_repos():
+def get_repos(save: bool | str = False):
     """Get all repositories from the Alan Turing Institute organisation on GitHub.
+
+    Args:
+        save (bool | str, optional): If True, save the data to "data/repos.csv" or
+        specify a path. Defaults to False.
 
     Returns:
         pandas Dataframe: One row per repo, columns repository name, id, url and last
@@ -46,4 +50,10 @@ def get_repos():
     ]
     flattened_edges = sum(edges, [])
     nodes = [x["node"] for x in flattened_edges]
-    return pd.DataFrame(nodes)
+    df = pd.DataFrame(nodes)
+
+    if save:
+        if save is True:
+            save = "data/repos.csv"
+        df.to_csv(save, index=False)
+    return df
