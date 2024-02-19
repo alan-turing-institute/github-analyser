@@ -3,81 +3,80 @@ import pandas as pd
 from github_analyser.utils import camel_to_snake, query_with_pagination
 
 
-def _get_pull_requests_data(repo_name: str):
+def _get_pull_requests_data(org_name: str, repo_name: str):
     """
     Retrieves pull requests data for a given repository.
 
     Args:
+        org_name (str): The name of the organisation.
         repo_name (str): The name of the repository.
 
     Returns:
         dict: The pull requests data in json format.
 
     """
-    query = """
-        query ($issues_end_cursor: String) {
-            repository(owner: "alan-turing-institute", name: "%s") {
-                pullRequests(first: 10, after: $issues_end_cursor, states: OPEN) {
-                    pageInfo {
+    query = f"""
+        query ($issues_end_cursor: String) {{
+            repository(owner: "{org_name}", name: "{repo_name}") {{
+                pullRequests(first: 10, after: $issues_end_cursor, states: OPEN) {{
+                    pageInfo {{
                         endCursor
                         hasNextPage
-                    }
+                    }}
                     totalCount
-                    edges {
-                        node {
+                    edges {{
+                        node {{
                             id
-                            author {
+                            author {{
                                 login
-                            }
+                            }}
                             changedFiles
-                            comments(first:100) {
-                                edges {
-                                    node {
-                                        author {
+                            comments(first:100) {{
+                                edges {{
+                                    node {{
+                                        author {{
                                             login
-                                        }
-                                    }
-                                }
-                            }
+                                        }}
+                                    }}
+                                }}
+                            }}
                             closed
                             closedAt
                             createdAt
                             lastEditedAt
                             merged
                             mergedAt
-                            mergedBy {
+                            mergedBy {{
                                 login
-                            }
+                            }}
                             state
                             updatedAt
                             totalCommentsCount
-                            reviews(first: 10) {
-                                edges {
-                                    node {
-                                        author {
+                            reviews(first: 10) {{
+                                edges {{
+                                    node {{
+                                        author {{
                                             login
-                                        }
+                                        }}
                                         state
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-    }
-    """ % (
-        repo_name
-    )
-
+                                    }}
+                                }}
+                            }}
+                        }}
+                    }}
+                }}
+            }}
+    }}
+    """
     return query_with_pagination(query, ["data", "repository", "pullRequests"])
 
 
-def get_pull_requests(repo_name: str, save: bool | str = False):
+def get_pull_requests(org_name: str, repo_name: str, save: bool | str = False):
     """
     Retrieves pull requests data for a given repository and returns it as a pandas DataFrame.
 
     Args:
+        org_name (str): The name of the organization.
         repo_name (str): The name of the repository.
         save (bool | str, optional): If True, save the data to
         "data/{repo_name}/pull_requests.csv" or specify a path. Defaults to False.
@@ -85,7 +84,7 @@ def get_pull_requests(repo_name: str, save: bool | str = False):
     Returns:
         pandas.DataFrame: The DataFrame containing pull requests data.
     """
-    data = _get_pull_requests_data(repo_name=repo_name)
+    data = _get_pull_requests_data(org_name=org_name, repo_name=repo_name)
     data_nodes = [
         edge["node"]
         for datum in data

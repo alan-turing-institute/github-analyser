@@ -6,7 +6,7 @@ from github_analyser.utils import query_with_pagination
 
 
 def get_commits(
-    repo_owner: str,
+    org_name: str,
     repo_name: str,
     total_commits_to_fetch=20,
     save: bool | str = False,
@@ -14,7 +14,7 @@ def get_commits(
     """Fetch info about commits from a GitHub repository.
 
     Args:
-        repo_owner: The owner of the repository.
+        org_name: The owner of the repository.
         repo_name: The name of the repository.
         total_commits_to_fetch: The total number of commits to fetch.
         save (bool | str, optional): If True, save the data to "data/commits.csv" or
@@ -31,7 +31,7 @@ def get_commits(
 
     query_template = f"""
     query ($afterCursor: String) {{
-        repository(owner: "{repo_owner}", name: "{repo_name}") {{
+        repository(owner: "{org_name}", name: "{repo_name}") {{
             defaultBranchRef {{
                 target {{
                     ... on Commit {{
