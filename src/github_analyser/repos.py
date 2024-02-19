@@ -2,7 +2,7 @@ from functools import reduce
 
 import pandas as pd
 
-from github_analyser.utils import query_with_pagination
+from github_analyser.utils import camel_to_snake, query_with_pagination
 
 repos_query = """
 query ($pagination_cursor: String) {
@@ -46,4 +46,8 @@ def get_repos():
     ]
     flattened_edges = sum(edges, [])
     nodes = [x["node"] for x in flattened_edges]
-    return pd.DataFrame(nodes)
+
+    df = pd.DataFrame(nodes)
+    df.rename(columns=camel_to_snake, inplace=True)
+
+    return df
