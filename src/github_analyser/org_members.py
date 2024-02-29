@@ -5,21 +5,20 @@ import pandas as pd
 from github_analyser.utils import camel_to_snake, query_with_pagination
 
 
-def _get_repos_query(org_name: str):
+def _get_org_members_query(org_name: str):
     return f"""
     query ($pagination_cursor: String) {{
       organization(login: "{org_name}") {{
-        repositories(first: 100, after: $pagination_cursor, orderBy: {{field: UPDATED_AT, direction: DESC}}) {{
+        membersWithRole(first: 30, after: $pagination_cursor) {{
           pageInfo {{
-            endCursor
             hasNextPage
+            endCursor
           }}
+          totalCount
           edges {{
+            role
             node {{
-              id
-              name
-              updatedAt
-              url
+              login
             }}
           }}
         }}
@@ -28,8 +27,8 @@ def _get_repos_query(org_name: str):
     """
 
 
-def get_repos(org_name: str, save: bool | str = False):
-    """Get all repositories from an organisation on GitHub.
+def get_org_members(org_name: str, save: bool | str = False):
+    """Get all members from an organisation on GitHub.
 
     Args:
         org_name (str): The name of the organisation.
@@ -41,25 +40,25 @@ def get_repos(org_name: str, save: bool | str = False):
         updated date.
     """
     pages = query_with_pagination(
-        _get_repos_query(org_name),
-        page_info_path=["data", "organization", "repositories"],
+        _get_org_members_query(org_name),
+        page_info_path=["data", "organization", "membersWithRole"],
     )
     edges = [
         reduce(
             lambda x, key: x[key],
-            ["data", "organization", "repositories", "edges"],
+            ["data", "organization", "membersWithRole", "edges"],
             page,
         )
         for page in pages
     ]
     flattened_edges = sum(edges, [])
-    nodes = [x["node"] for x in flattened_edges]
-    df = pd.DataFrame(nodes)
+    df = pd.json_normalize(flattened_edges)
+    df.rename(columns={"node.login": "login"}, inplace=True)
     df.rename(columns=camel_to_snake, inplace=True)
 
     if save:
         if save is True:
-            save = "data/repos.csv"
+            save = "data/org_members.csv"
         df.to_csv(save, index=False)
 
     return df
