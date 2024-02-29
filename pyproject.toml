@@ -32,12 +32,15 @@ classifiers = [
 dependencies = [
     "requests ~= 2.27",
     "pandas ~= 2.0",
+    # pyarrow is included only to silence a deprecation warning of Pandas 2.2.*.
+    "pyarrow ~= 15.0",
 ]
 
 [project.optional-dependencies]
 test = [
   "pytest >=6",
   "pytest-cov >=3",
+  "responses ~= 0.25",
 ]
 dev = [
   "pytest >=6",
