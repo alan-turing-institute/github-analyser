@@ -122,9 +122,9 @@ envs.default.dependencies = [
 ]
 
 src = ["src"]
-unfixable = [
-  "F841", # Would remove unused variables
-]
+# Don't use the automatic fixing for most things. Do fix import order though.
+fixable = ["I"]
+unfixable = ["F", "E"]
 exclude = []
 flake8-unused-arguments.ignore-variadic-names = true
 isort.required-imports = ["from __future__ import annotations"]
