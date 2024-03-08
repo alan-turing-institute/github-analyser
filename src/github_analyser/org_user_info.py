@@ -40,6 +40,7 @@ def _get_org_teams_query(org_name: str):
           edges {{
             node {{
               name
+              slug
             }}
           }}
         }}
@@ -109,6 +110,7 @@ def get_org_teams(org_name: str, save: bool | str = False):
     ]
     flattened_edges = sum(edges, [])
     df = pd.json_normalize(flattened_edges)
+    df.rename(columns={"node.name": "name", "node.slug": "slug"}, inplace=True)
     df.rename(columns=camel_to_snake, inplace=True)
 
     if save:
