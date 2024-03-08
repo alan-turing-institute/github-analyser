@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import math
-from typing import Optional
 
 import pandas as pd
 
@@ -50,7 +51,7 @@ def _get_commits_query(org_name: str, repo_name: str) -> str:
 def get_commits(
     org_name: str,
     repo_name: str,
-    total_commits_to_fetch: Optional[int] = None,
+    total_commits_to_fetch: int | None = None,
     save: bool | str = False,
 ) -> pd.DataFrame:
     """Fetch info about commits from a GitHub repository.

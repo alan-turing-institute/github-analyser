@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import pandas as pd
 
 from github_analyser.utils import camel_to_snake, query_with_pagination
