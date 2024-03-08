@@ -20,6 +20,13 @@ def _get_repos_query(org_name: str):
               name
               updatedAt
               url
+              languages(first: 10) {{
+                edges {{
+                  node {{
+                    name
+                  }}
+                }}
+              }}
             }}
           }}
         }}
@@ -54,6 +61,8 @@ def get_repos(org_name: str, save: bool | str = False):
     ]
     flattened_edges = sum(edges, [])
     nodes = [x["node"] for x in flattened_edges]
+    for node in nodes:
+        node["languages"] = [x["node"]["name"] for x in node["languages"]["edges"]]
     df = pd.DataFrame(nodes)
     df.rename(columns=camel_to_snake, inplace=True)
 
