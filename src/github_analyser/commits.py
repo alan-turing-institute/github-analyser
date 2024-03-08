@@ -10,19 +10,28 @@ def _get_commits_query(org_name: str, repo_name: str) -> str:
     return f"""
     query ($afterCursor: String) {{
         repository(owner: "{org_name}", name: "{repo_name}") {{
+            id
             defaultBranchRef {{
                 target {{
                     ... on Commit {{
                         history(first: 10, after: $afterCursor) {{
                             edges {{
                                 node {{
+                                    id
+                                    oid
                                     messageHeadline
                                     author {{
                                         name
                                         date
                                     }}
+                                    changedFiles
                                     additions
                                     deletions
+                                    associatedPullRequests(first: 5) {{
+                                        nodes {{
+                                            id
+                                        }}
+                                    }}
                                 }}
                             }}
                             pageInfo {{
@@ -75,6 +84,11 @@ def get_commits(
         max_pages=max_pages_to_fetch,
     )
 
+    # extract repo id from the first response
+    repo_id = None
+    if responses:
+        repo_id = responses[0]["data"]["repository"]["id"]
+
     nodes = []
     for response in responses:
         edges = response["data"]["repository"]["defaultBranchRef"]["target"]["history"][
@@ -93,10 +107,15 @@ def get_commits(
             "messageHeadline": "message",
             "author_name": "author",
             "author_date": "date",
+            "oid": "hash",
+            "associatedPullRequests_nodes": "pr_id",
         },
         inplace=True,
     )
     df.rename(columns=camel_to_snake, inplace=True)
+    df["pr_id"] = df["pr_id"].apply(lambda x: x[0]["id"] if x else None)
+    # add repo_id to the dataframe
+    df["repo_id"] = repo_id
 
     if save:
         if save is True:
