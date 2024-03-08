@@ -27,7 +27,7 @@ def request_github(payload: Any, headers: Any | None = None) -> Any:
     if headers is None:
         headers = {}
     github_token = os.environ["GITHUB_TOKEN"]
-    headers = headers | {"Authorization": f"Bearer {github_token}"}
+    headers["Authorization"] = f"Bearer {github_token}"
     response = requests.post(GITHUB_API_URL, json=payload, headers=headers)
     if response.status_code != 200:
         msg = f"GitHub query failed by code {response.status_code}."
