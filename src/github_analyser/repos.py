@@ -31,7 +31,7 @@ def _get_repos_query(org_name: str):
 
 
 def get_repos(org_name: str, save: bool | str = False):
-    """Get all repositories from the Alan Turing Institute organisation on GitHub.
+    """Get all repositories from an organisation on GitHub.
 
     Args:
         org_name (str): The name of the organisation.
