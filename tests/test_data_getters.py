@@ -5,7 +5,15 @@ from github_analyser.repos import get_repos
 def test_get_repos(mock_github):  # noqa: ARG001
     repos = get_repos("alan-turing-institute")
     assert len(repos) == 10
-    assert set(repos.columns) == {"id", "name", "url", "updated_at"}
+    assert set(repos.columns) == {
+        "id",
+        "name",
+        "url",
+        "updated_at",
+        "languages",
+        "is_private",
+        "is_archived",
+    }
     assert "github-analyser" in repos.loc[:, "name"].values
     assert (
         "https://github.com/alan-turing-institute/github-analyser"

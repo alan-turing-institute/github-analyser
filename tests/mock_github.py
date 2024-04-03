@@ -14,6 +14,17 @@ repos_query = """
               name
               updatedAt
               url
+              isPrivate
+              isArchived
+              languages(first: 10) {
+                totalSize
+                edges {
+                  size
+                  node {
+                    name
+                  }
+                }
+              }
             }
           }
         }
@@ -88,6 +99,23 @@ request_to_response = [
                                     "name": "TestRepo01",
                                     "updatedAt": "2024-02-28T22:38:30Z",
                                     "url": "https://github.com/alan-turing-institute/TestRepo01",
+                                    "isPrivate": False,
+                                    "isArchived": False,
+                                    "languages": {
+                                        "totalSize": 50657,
+                                        "edges": [
+                                            {"size": 1773, "node": {"name": "HTML"}},
+                                            {
+                                                "size": 23512,
+                                                "node": {"name": "JavaScript"},
+                                            },
+                                            {
+                                                "size": 25179,
+                                                "node": {"name": "TypeScript"},
+                                            },
+                                            {"size": 193, "node": {"name": "CSS"}},
+                                        ],
+                                    },
                                 }
                             },
                             {
@@ -96,6 +124,9 @@ request_to_response = [
                                     "name": "TestRepo02",
                                     "updatedAt": "2024-02-28T15:17:15Z",
                                     "url": "https://github.com/alan-turing-institute/TestRepo02",
+                                    "isPrivate": True,
+                                    "isArchived": False,
+                                    "languages": {"totalSize": 0, "edges": []},
                                 }
                             },
                             {
@@ -104,6 +135,17 @@ request_to_response = [
                                     "name": "TestRepo03",
                                     "updatedAt": "2024-02-27T15:32:29Z",
                                     "url": "https://github.com/alan-turing-institute/TestRepo03",
+                                    "isPrivate": False,
+                                    "isArchived": True,
+                                    "languages": {
+                                        "totalSize": 4127284,
+                                        "edges": [
+                                            {
+                                                "size": 4127284,
+                                                "node": {"name": "Jupyter Notebook"},
+                                            }
+                                        ],
+                                    },
                                 }
                             },
                             {
@@ -112,6 +154,9 @@ request_to_response = [
                                     "name": "github-analyser",
                                     "updatedAt": "2023-12-13T11:53:26Z",
                                     "url": "https://github.com/alan-turing-institute/github-analyser",
+                                    "isPrivate": True,
+                                    "isArchived": True,
+                                    "languages": {"totalSize": 0, "edges": []},
                                 }
                             },
                         ],
@@ -142,6 +187,9 @@ request_to_response = [
                                     "name": "This is not a test repo",
                                     "updatedAt": "2023-11-30T14:57:44Z",
                                     "url": "https://github.com/alan-turing-institute/defonot",
+                                    "isPrivate": True,
+                                    "isArchived": True,
+                                    "languages": {"totalSize": 0, "edges": []},
                                 }
                             },
                             {
@@ -150,6 +198,17 @@ request_to_response = [
                                     "name": "Who needs more test repos?",
                                     "updatedAt": "2023-11-14T18:12:47Z",
                                     "url": "https://github.com/alan-turing-institute/idont",
+                                    "isPrivate": False,
+                                    "isArchived": False,
+                                    "languages": {
+                                        "totalSize": 1,
+                                        "edges": [
+                                            {
+                                                "size": 1,
+                                                "node": {"name": "Jupyter Notebook"},
+                                            }
+                                        ],
+                                    },
                                 }
                             },
                         ],
@@ -180,6 +239,17 @@ request_to_response = [
                                     "name": "Also why does this result have so many pages",
                                     "updatedAt": "2023-06-12T14:29:46Z",
                                     "url": "https://github.com/alan-turing-institute/ugghhpages",
+                                    "isPrivate": False,
+                                    "isArchived": False,
+                                    "languages": {
+                                        "totalSize": 1,
+                                        "edges": [
+                                            {
+                                                "size": 1,
+                                                "node": {"name": "Python"},
+                                            }
+                                        ],
+                                    },
                                 }
                             },
                             {
@@ -188,6 +258,17 @@ request_to_response = [
                                     "name": "And besides, they are supposed to have 100 repos each, but only have like 2",
                                     "updatedAt": "2023-06-09T15:50:54Z",
                                     "url": "https://github.com/alan-turing-institute/yeahimlazytowrite100",
+                                    "isPrivate": False,
+                                    "isArchived": False,
+                                    "languages": {
+                                        "totalSize": 1,
+                                        "edges": [
+                                            {
+                                                "size": 1,
+                                                "node": {"name": "Python"},
+                                            }
+                                        ],
+                                    },
                                 }
                             },
                         ],
@@ -218,6 +299,17 @@ request_to_response = [
                                     "name": "This promises to be the last page",
                                     "updatedAt": "2022-08-08T03:47:24Z",
                                     "url": "https://github.com/alan-turing-institute/itbetterbetoo",
+                                    "isPrivate": False,
+                                    "isArchived": False,
+                                    "languages": {
+                                        "totalSize": 1,
+                                        "edges": [
+                                            {
+                                                "size": 1,
+                                                "node": {"name": "Python"},
+                                            }
+                                        ],
+                                    },
                                 }
                             },
                             {
@@ -226,6 +318,17 @@ request_to_response = [
                                     "name": "Yaaaay",
                                     "updatedAt": "2022-08-02T13:36:34Z",
                                     "url": "https://github.com/alan-turing-institute/grumblegrumble",
+                                    "isPrivate": False,
+                                    "isArchived": False,
+                                    "languages": {
+                                        "totalSize": 1,
+                                        "edges": [
+                                            {
+                                                "size": 1,
+                                                "node": {"name": "Python"},
+                                            }
+                                        ],
+                                    },
                                 }
                             },
                         ],
