@@ -3,7 +3,7 @@ from unittest.mock import patch
 
 import pytest
 import responses
-from github_analyser.utils import GITHUB_API_URL
+from github_analyser.utils import GITHUB_API_URL_GRAPHQL
 
 from .mock_github import request_to_response
 
@@ -17,7 +17,7 @@ def mock_github():
         for request, response in request_to_response:
             rsps.add(
                 responses.POST,
-                GITHUB_API_URL,
+                GITHUB_API_URL_GRAPHQL,
                 match=[responses.matchers.json_params_matcher(request)],
                 json=response,
             )

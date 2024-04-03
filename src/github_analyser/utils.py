@@ -4,15 +4,58 @@ from __future__ import annotations
 import logging
 import os
 import re
+import time
 from functools import reduce
 from typing import Any
 
 import requests
 
-GITHUB_API_URL = "https://api.github.com/graphql"
+GITHUB_API_URL_GRAPHQL = "https://api.github.com/graphql"
+GITHUB_API_URL_REST = "https://api.github.com"
 
 
-def request_github(payload: Any, headers: Any | None = None) -> Any:
+def request_github_rest(
+    method: str,
+    end_point: str,
+    payload: Any = None,
+    headers: Any | None = None,
+    max_tries: int = 10,
+    sleep_time: float = 1.0,
+) -> Any:
+    """Run an autheticated query against the GitHub API.
+
+    Assumes that the GitHub token is set in the environment variable GITHUB_TOKEN.
+
+    Args:
+        method: The HTTP method to use.
+        end_point: The endpoint to query.
+        payload: The payload to send with the request.
+        headers: Any additional headers to pass to the request.
+        max_tries: The maximum number of times to try the request. Optional, default is 10.
+        sleep_time: The time to sleep between tries. Optional, default is 1.0.
+
+    Returns:
+        The response from the GitHub API as parsed JSON.
+    """
+    if headers is None:
+        headers = {}
+    github_token = os.environ["GITHUB_TOKEN"]
+    headers["Authorization"] = f"Bearer {github_token}"
+    request_func = getattr(requests, method)
+    url = f"{GITHUB_API_URL_REST}/{end_point}"
+    response = request_func(url, json=payload, headers=headers)
+    counter = 0
+    while response.status_code == 202 and counter < max_tries:
+        # This is GitHub's way of saying "I'm working on it, come back later".
+        time.sleep(sleep_time)
+        response = request_func(url, json=payload, headers=headers)
+    if response.status_code != 200:
+        msg = f"GitHub query failed by code {response.status_code}."
+        raise Exception(msg)
+    return response.json()
+
+
+def request_github_graphql(payload: Any, headers: Any | None = None) -> Any:
     """Run an autheticated query against the GitHub API.
 
     Assumes that the GitHub token is set in the environment variable GITHUB_TOKEN.
@@ -22,13 +65,13 @@ def request_github(payload: Any, headers: Any | None = None) -> Any:
         headers: Any additional headers to pass to the request.
 
     Returns:
-        The response from the GitHub API as JSON.
+        The response from the GitHub API as parsed JSON.
     """
     if headers is None:
         headers = {}
     github_token = os.environ["GITHUB_TOKEN"]
     headers["Authorization"] = f"Bearer {github_token}"
-    response = requests.post(GITHUB_API_URL, json=payload, headers=headers)
+    response = requests.post(GITHUB_API_URL_GRAPHQL, json=payload, headers=headers)
     if response.status_code != 200:
         msg = f"GitHub query failed by code {response.status_code}."
         raise Exception(msg)
@@ -56,7 +99,7 @@ def query_with_pagination(
     """
     if page_info_path is None:
         # There is no pagination to do.
-        return [request_github({"query": query})]
+        return [request_github_graphql({"query": query})]
     has_next_page = True
     end_cursor = None
     return_value = []
@@ -65,7 +108,7 @@ def query_with_pagination(
         page_counter += 1
         logging.debug("Requesting page %s", page_counter)
         payload = {"query": query, "variables": {cursor_variable_name: end_cursor}}
-        data = request_github(payload)
+        data = request_github_graphql(payload)
         return_value.append(data)
         try:
             pagination = reduce(
