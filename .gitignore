@@ -156,6 +156,3 @@ Thumbs.db
 # Common editor files
 *~
 *.swp
-
-# notebooks
-*.ipynb
