@@ -27,8 +27,8 @@ def request_github_rest(
     Assumes that the GitHub token is set in the environment variable GITHUB_TOKEN.
 
     Args:
-        method: The HTTP method to use.
-        end_point: The endpoint to query.
+        method: The HTTP method to use, e.g. "get" or "post".
+        end_point: The end point to query.
         payload: The payload to send with the request.
         headers: Any additional headers to pass to the request.
         max_tries: The maximum number of times to try the request. Optional, default is 10.
