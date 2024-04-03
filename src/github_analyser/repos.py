@@ -22,6 +22,17 @@ def _get_repos_query(org_name: str):
               name
               updatedAt
               url
+              isPrivate
+              isArchived
+              languages(first: 10) {{
+                totalSize
+                edges {{
+                  size
+                  node {{
+                    name
+                  }}
+                }}
+              }}
             }}
           }}
         }}
@@ -56,6 +67,17 @@ def get_repos(org_name: str, save: bool | str = False):
     ]
     flattened_edges = sum(edges, [])
     nodes = [x["node"] for x in flattened_edges]
+    for node in nodes:
+        total_size = node["languages"]["totalSize"]
+        if node["isPrivate"]:
+            # TODO For whatever reason the languages field is not returned for private
+            # repos. This is a temporary fix.
+            node["languages"] = pd.NA
+        else:
+            node["languages"] = {
+                x["node"]["name"]: x["size"] / total_size
+                for x in node["languages"]["edges"]
+            }
     df = pd.DataFrame(nodes)
     df.rename(columns=camel_to_snake, inplace=True)
 
