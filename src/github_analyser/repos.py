@@ -24,6 +24,7 @@ def _get_repos_query(org_name: str):
               url
               isPrivate
               isArchived
+              isFork
               languages(first: 10) {{
                 totalSize
                 edges {{
