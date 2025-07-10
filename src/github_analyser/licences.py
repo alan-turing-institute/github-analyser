@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import pathlib
+from pathlib import Path
 
 import pandas as pd
 
@@ -102,8 +102,8 @@ def get_licences(
 
     if save:
         if save is True:
-            if not pathlib.Path.exists("data"):
-                pathlib.Path.mkdir("data")
+            if not Path("data").exists():
+                Path("data").mkdir(parents=True, exist_ok=True)
             save = f"data/{repo_name}/licences.csv"
         df.to_csv(save, index=False)
 
