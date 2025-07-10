@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pathlib
+
 import pandas as pd
 
 from github_analyser.utils import camel_to_snake, request_github_graphql
@@ -100,6 +102,8 @@ def get_licences(
 
     if save:
         if save is True:
+            if not pathlib.Path.exists("data"):
+                pathlib.Path.mkdir("data")
             save = f"data/{repo_name}/licences.csv"
         df.to_csv(save, index=False)
 
