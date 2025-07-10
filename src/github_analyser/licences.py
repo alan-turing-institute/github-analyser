@@ -104,7 +104,7 @@ def get_licences(
         if save is True:
             if not Path("data").exists():
                 Path("data").mkdir(parents=True, exist_ok=True)
-            save = f"data/{repo_name}/licences.csv"
+            save = "data/licences.csv"
         df.to_csv(save, index=False)
 
     return df
