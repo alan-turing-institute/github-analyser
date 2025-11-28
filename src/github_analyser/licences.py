@@ -40,11 +40,12 @@ def get_licence(
 
     response = request_github_graphql({"query": query})
     # extract repo id from the first response
-    repo_id = None
-    if response:
-        repo_id = response["data"]["repository"]["id"]
-        repo_url = response["data"]["repository"]["url"]
+    if "errors" in response:
+        print(f"Failed to get licence data for {repo_name}: {response['errors']}")
+        return pd.Series()
 
+    repo_id = response["data"]["repository"]["id"]
+    repo_url = response["data"]["repository"]["url"]
     licence_info = response["data"]["repository"]["licenseInfo"]
 
     if licence_info is None:
