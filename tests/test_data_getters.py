@@ -13,6 +13,7 @@ def test_get_repos(mock_github):  # noqa: ARG001
         "languages",
         "is_private",
         "is_archived",
+        "is_fork",
     }
     assert "github-analyser" in repos.loc[:, "name"].values
     assert (
