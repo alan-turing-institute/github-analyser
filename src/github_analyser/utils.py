@@ -112,13 +112,17 @@ def query_with_pagination(
         return_value.append(data)
         try:
             pagination = reduce(
-                lambda d, key: d[key], page_info_path, data
+                lambda d, key: d[key] if d is not None else None,
+                page_info_path,
+                data,
             )  # reduce(function, sequence to go through, initial)
         except KeyError as e:
             msg = (
                 f'Could not find page info path "{page_info_path}" in response {data}.'
             )
             raise KeyError(msg) from e
+        if pagination is None:
+            break
         end_cursor = pagination["pageInfo"]["endCursor"]
         has_next_page = pagination["pageInfo"]["hasNextPage"]
         if max_pages is not None and page_counter >= max_pages:

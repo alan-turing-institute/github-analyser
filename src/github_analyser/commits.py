@@ -92,15 +92,32 @@ def get_commits(
 
     nodes = []
     for response in responses:
-        edges = response["data"]["repository"]["defaultBranchRef"]["target"]["history"][
-            "edges"
-        ]
+        default_branch_ref = response["data"]["repository"]["defaultBranchRef"]
+        if default_branch_ref is None:
+            break
+        edges = default_branch_ref["target"]["history"]["edges"]
         nodes.extend(edge["node"] for edge in edges)
         if total_commits_to_fetch is not None and len(nodes) >= total_commits_to_fetch:
             break
 
     if total_commits_to_fetch is not None:
         nodes = nodes[:total_commits_to_fetch]
+
+    if not nodes:
+        return pd.DataFrame(
+            columns=[
+                "id",
+                "hash",
+                "message",
+                "author",
+                "date",
+                "changed_files",
+                "additions",
+                "deletions",
+                "pr_id",
+                "repo_id",
+            ]
+        )
 
     df = pd.json_normalize(nodes, sep="_")
     df.rename(

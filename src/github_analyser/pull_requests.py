@@ -107,6 +107,24 @@ def get_pull_requests(org_name: str, repo_name: str, save: bool | str = False):
         for datum in data
         for edge in datum["data"]["repository"]["pullRequests"]["edges"]
     ]
+    if not data_nodes:
+        return pd.DataFrame(
+            columns=[
+                "id",
+                "author",
+                "changed_files",
+                "comments",
+                "closed",
+                "closed_at",
+                "created_at",
+                "merged",
+                "merged_at",
+                "state",
+                "updated_at",
+                "total_comments_count",
+                "reviews",
+            ]
+        )
     df = pd.json_normalize(data_nodes, sep="_")
     df["comments"] = df["comments_edges"].apply(_get_authors)
     df["reviews"] = df["reviews_edges"].apply(_get_authors)

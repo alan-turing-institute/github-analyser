@@ -1,5 +1,9 @@
 """Utilities for mocking GitHub API responses."""
 
+from github_analyser.commits import _get_commits_query
+from github_analyser.issues import _get_issues_query
+from github_analyser.pull_requests import _get_pull_requests_query
+
 repos_query = """
     query ($pagination_cursor: String) {
       organization(login: "alan-turing-institute") {
@@ -437,6 +441,56 @@ request_to_response = [
                                 }
                             },
                         ],
+                    }
+                }
+            }
+        },
+    ),
+    # Empty repo: no commits (defaultBranchRef is null)
+    (
+        {
+            "query": _get_commits_query("alan-turing-institute", "empty-repo"),
+            "variables": {"afterCursor": None},
+        },
+        {
+            "data": {
+                "repository": {
+                    "id": "R_empty",
+                    "defaultBranchRef": None,
+                }
+            }
+        },
+    ),
+    # Empty repo: no pull requests
+    (
+        {
+            "query": _get_pull_requests_query("alan-turing-institute", "empty-repo"),
+            "variables": {"pagination_cursor": None},
+        },
+        {
+            "data": {
+                "repository": {
+                    "pullRequests": {
+                        "pageInfo": {"endCursor": None, "hasNextPage": False},
+                        "totalCount": 0,
+                        "edges": [],
+                    }
+                }
+            }
+        },
+    ),
+    # Empty repo: no issues
+    (
+        {
+            "query": _get_issues_query("alan-turing-institute", "empty-repo"),
+            "variables": {"pagination_cursor": None},
+        },
+        {
+            "data": {
+                "repository": {
+                    "issues": {
+                        "pageInfo": {"endCursor": None, "hasNextPage": False},
+                        "edges": [],
                     }
                 }
             }
