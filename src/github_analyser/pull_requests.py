@@ -78,9 +78,12 @@ def _get_authors(edge):
         str: A string containing a comma separated list of the names of the authors.
         Deleted authors are represented by pd.NA.
     """
-    authors = [i["node"]["author"].get("login", pd.NA) for i in edge]
+    authors = [
+        i["node"]["author"]["login"] if i["node"]["author"] is not None else pd.NA
+        for i in edge
+    ]
     if len(authors) > 0:
-        return (", ").join(authors)
+        return ", ".join(str(a) for a in authors)
     return ""
 
 
