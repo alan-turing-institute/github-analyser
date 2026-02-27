@@ -49,6 +49,7 @@ def request_github_rest(
         # This is GitHub's way of saying "I'm working on it, come back later".
         time.sleep(sleep_time)
         response = request_func(url, json=payload, headers=headers)
+        counter += 1
     if response.status_code != 200:
         msg = f"GitHub query failed by code {response.status_code}."
         raise Exception(msg)
