@@ -76,7 +76,11 @@ def request_github_graphql(payload: Any, headers: Any | None = None) -> Any:
     if response.status_code != 200:
         msg = f"GitHub query failed by code {response.status_code}."
         raise Exception(msg)
-    return response.json()
+    data = response.json()
+    if "errors" in data:
+        msg = f"GitHub GraphQL query returned errors: {data['errors']}"
+        raise Exception(msg)
+    return data
 
 
 def query_with_pagination(
