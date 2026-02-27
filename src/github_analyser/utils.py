@@ -22,7 +22,7 @@ def request_github_rest(
     max_tries: int = 10,
     sleep_time: float = 1.0,
 ) -> Any:
-    """Run an autheticated query against the GitHub API.
+    """Run an authenticated query against the GitHub API.
 
     Assumes that the GitHub token is set in the environment variable GITHUB_TOKEN.
 
@@ -57,7 +57,7 @@ def request_github_rest(
 
 
 def request_github_graphql(payload: Any, headers: Any | None = None) -> Any:
-    """Run an autheticated query against the GitHub API.
+    """Run an authenticated query against the GitHub API.
 
     Assumes that the GitHub token is set in the environment variable GITHUB_TOKEN.
 
@@ -98,6 +98,8 @@ def query_with_pagination(
             means no pagination is done and the return value will be a list of length 1.
         cursor_variable_name: The name of the cursor variable in the query.
             "pagination_cursor" by default.
+        max_pages: The maximum number of pages to fetch. Optional, default is None
+            (fetch all pages).
 
     Returns:
         A list of responses from the GitHub API as JSON.

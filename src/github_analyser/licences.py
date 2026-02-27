@@ -34,7 +34,7 @@ def get_licence(
         repo_name: The name of the repository.
 
     Returns:
-        A pandas Series containing the repository ID, licence name, and SPDX ID.
+        A pandas Series containing the repository name, URL, ID, licence name, and SPDX ID.
     """
     query = _get_licence_query(org_name, repo_name)
 

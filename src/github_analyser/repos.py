@@ -51,8 +51,8 @@ def get_repos(org_name: str, save: bool | str = False):
         specify a path. Defaults to False.
 
     Returns:
-        pandas Dataframe: One row per repo, columns repository name, id, url and last
-        updated date.
+        pandas Dataframe: One row per repo, with columns id, name, updated_at, url,
+        is_private, is_archived, is_fork, and languages.
     """
     pages = query_with_pagination(
         _get_repos_query(org_name),

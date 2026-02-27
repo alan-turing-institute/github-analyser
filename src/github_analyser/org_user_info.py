@@ -95,7 +95,7 @@ def get_org_teams(org_name: str, save: bool | str = False):
         specify a path. Defaults to False.
 
     Returns:
-        pandas Dataframe: One row per team, columns name.
+        pandas Dataframe: One row per team, with columns name, slug, and id.
     """
     pages = query_with_pagination(
         _get_org_teams_query(org_name),
