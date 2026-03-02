@@ -20,7 +20,8 @@ def get_repo_contributors(
 
     Returns:
         A pandas DataFrame with the following columns:
-            TODO
+            - login: The GitHub username of the contributor.
+            - commits: The total number of commits by the contributor.
     """
     data = request_github_rest(
         "get", f"repos/{org_name}/{repo_name}/stats/contributors"

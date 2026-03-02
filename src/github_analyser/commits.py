@@ -65,11 +65,16 @@ def get_commits(
 
     Returns:
         A pandas DataFrame with the following columns:
-            - message: The commit message.
-            - additions: The number of additions in the commit.
-            - deletions: The number of deletions in the commit.
+            - id: The commit node ID.
+            - hash: The commit SHA.
+            - message: The commit message headline.
             - author: The author of the commit.
             - date: The date of the commit.
+            - changed_files: The number of files changed.
+            - additions: The number of line additions.
+            - deletions: The number of line deletions.
+            - pr_id: The ID of the associated pull request, if any.
+            - repo_id: The repository node ID.
     """
     query = _get_commits_query(org_name, repo_name)
 
