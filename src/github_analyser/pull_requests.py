@@ -78,9 +78,12 @@ def _get_authors(edge):
         str: A string containing a comma separated list of the names of the authors.
         Deleted authors are represented by pd.NA.
     """
-    authors = [i["node"]["author"].get("login", pd.NA) for i in edge]
+    authors = [
+        i["node"]["author"]["login"] if i["node"]["author"] is not None else pd.NA
+        for i in edge
+    ]
     if len(authors) > 0:
-        return (", ").join(authors)
+        return ", ".join(str(a) for a in authors)
     return ""
 
 
@@ -107,6 +110,24 @@ def get_pull_requests(org_name: str, repo_name: str, save: bool | str = False):
         for datum in data
         for edge in datum["data"]["repository"]["pullRequests"]["edges"]
     ]
+    if not data_nodes:
+        return pd.DataFrame(
+            columns=[
+                "id",
+                "author",
+                "changed_files",
+                "comments",
+                "closed",
+                "closed_at",
+                "created_at",
+                "merged",
+                "merged_at",
+                "state",
+                "updated_at",
+                "total_comments_count",
+                "reviews",
+            ]
+        )
     df = pd.json_normalize(data_nodes, sep="_")
     df["comments"] = df["comments_edges"].apply(_get_authors)
     df["reviews"] = df["reviews_edges"].apply(_get_authors)

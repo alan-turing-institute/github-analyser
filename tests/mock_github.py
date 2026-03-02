@@ -1,5 +1,9 @@
 """Utilities for mocking GitHub API responses."""
 
+from github_analyser.commits import _get_commits_query
+from github_analyser.issues import _get_issues_query
+from github_analyser.pull_requests import _get_pull_requests_query
+
 repos_query = """
     query ($pagination_cursor: String) {
       organization(login: "alan-turing-institute") {
@@ -16,6 +20,7 @@ repos_query = """
               url
               isPrivate
               isArchived
+              isFork
               languages(first: 10) {
                 totalSize
                 edges {
@@ -101,6 +106,7 @@ request_to_response = [
                                     "url": "https://github.com/alan-turing-institute/TestRepo01",
                                     "isPrivate": False,
                                     "isArchived": False,
+                                    "isFork": False,
                                     "languages": {
                                         "totalSize": 50657,
                                         "edges": [
@@ -126,6 +132,7 @@ request_to_response = [
                                     "url": "https://github.com/alan-turing-institute/TestRepo02",
                                     "isPrivate": True,
                                     "isArchived": False,
+                                    "isFork": False,
                                     "languages": {"totalSize": 0, "edges": []},
                                 }
                             },
@@ -137,6 +144,7 @@ request_to_response = [
                                     "url": "https://github.com/alan-turing-institute/TestRepo03",
                                     "isPrivate": False,
                                     "isArchived": True,
+                                    "isFork": False,
                                     "languages": {
                                         "totalSize": 4127284,
                                         "edges": [
@@ -156,6 +164,7 @@ request_to_response = [
                                     "url": "https://github.com/alan-turing-institute/github-analyser",
                                     "isPrivate": True,
                                     "isArchived": True,
+                                    "isFork": False,
                                     "languages": {"totalSize": 0, "edges": []},
                                 }
                             },
@@ -189,6 +198,7 @@ request_to_response = [
                                     "url": "https://github.com/alan-turing-institute/defonot",
                                     "isPrivate": True,
                                     "isArchived": True,
+                                    "isFork": False,
                                     "languages": {"totalSize": 0, "edges": []},
                                 }
                             },
@@ -200,6 +210,7 @@ request_to_response = [
                                     "url": "https://github.com/alan-turing-institute/idont",
                                     "isPrivate": False,
                                     "isArchived": False,
+                                    "isFork": False,
                                     "languages": {
                                         "totalSize": 1,
                                         "edges": [
@@ -241,6 +252,7 @@ request_to_response = [
                                     "url": "https://github.com/alan-turing-institute/ugghhpages",
                                     "isPrivate": False,
                                     "isArchived": False,
+                                    "isFork": False,
                                     "languages": {
                                         "totalSize": 1,
                                         "edges": [
@@ -260,6 +272,7 @@ request_to_response = [
                                     "url": "https://github.com/alan-turing-institute/yeahimlazytowrite100",
                                     "isPrivate": False,
                                     "isArchived": False,
+                                    "isFork": False,
                                     "languages": {
                                         "totalSize": 1,
                                         "edges": [
@@ -301,6 +314,7 @@ request_to_response = [
                                     "url": "https://github.com/alan-turing-institute/itbetterbetoo",
                                     "isPrivate": False,
                                     "isArchived": False,
+                                    "isFork": False,
                                     "languages": {
                                         "totalSize": 1,
                                         "edges": [
@@ -320,6 +334,7 @@ request_to_response = [
                                     "url": "https://github.com/alan-turing-institute/grumblegrumble",
                                     "isPrivate": False,
                                     "isArchived": False,
+                                    "isFork": True,
                                     "languages": {
                                         "totalSize": 1,
                                         "edges": [
@@ -426,6 +441,56 @@ request_to_response = [
                                 }
                             },
                         ],
+                    }
+                }
+            }
+        },
+    ),
+    # Empty repo: no commits (defaultBranchRef is null)
+    (
+        {
+            "query": _get_commits_query("alan-turing-institute", "empty-repo"),
+            "variables": {"afterCursor": None},
+        },
+        {
+            "data": {
+                "repository": {
+                    "id": "R_empty",
+                    "defaultBranchRef": None,
+                }
+            }
+        },
+    ),
+    # Empty repo: no pull requests
+    (
+        {
+            "query": _get_pull_requests_query("alan-turing-institute", "empty-repo"),
+            "variables": {"pagination_cursor": None},
+        },
+        {
+            "data": {
+                "repository": {
+                    "pullRequests": {
+                        "pageInfo": {"endCursor": None, "hasNextPage": False},
+                        "totalCount": 0,
+                        "edges": [],
+                    }
+                }
+            }
+        },
+    ),
+    # Empty repo: no issues
+    (
+        {
+            "query": _get_issues_query("alan-turing-institute", "empty-repo"),
+            "variables": {"pagination_cursor": None},
+        },
+        {
+            "data": {
+                "repository": {
+                    "issues": {
+                        "pageInfo": {"endCursor": None, "hasNextPage": False},
+                        "edges": [],
                     }
                 }
             }

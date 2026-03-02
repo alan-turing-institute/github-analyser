@@ -98,6 +98,18 @@ def get_issues(org_name: str, repo_name: str, save: bool | str = False) -> pd.Da
     ]
     flattened_edges = sum(edges, [])
     nodes = [x["node"] for x in flattened_edges]
+    if not nodes:
+        return pd.DataFrame(
+            columns=[
+                "title",
+                "body",
+                "author",
+                "created_at",
+                "closed_at",
+                "comments",
+                "labels",
+            ]
+        )
     for node in nodes:
         node["author"] = _author_login(node)
 
