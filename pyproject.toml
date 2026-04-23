@@ -34,6 +34,7 @@ dependencies = [
     # pyarrow is included only to silence a deprecation warning of Pandas 2.2.*.
     "pyarrow ~= 15.0",
     "python-dateutil >= 2.9",
+    "tabulate",
 ]
 
 [project.optional-dependencies]

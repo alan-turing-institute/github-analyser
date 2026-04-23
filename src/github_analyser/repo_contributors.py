@@ -24,9 +24,9 @@ def get_repo_contributors(
             - commits: The total number of commits by the contributor.
     """
     data = request_github_rest(
-        "get", f"repos/{org_name}/{repo_name}/stats/contributors"
+        "get", f"repos/{org_name}/{repo_name}/contributors?per_page=100"
     )
-    data = [{"login": x["author"]["login"], "commits": x["total"]} for x in data]
+    data = [{"login": x["login"], "commits": x["contributions"]} for x in data]
     df = pd.DataFrame(data)
 
     if save:
