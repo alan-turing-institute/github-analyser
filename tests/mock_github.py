@@ -3,39 +3,9 @@
 from github_analyser.commits import _get_commits_query
 from github_analyser.issues import _get_issues_query
 from github_analyser.pull_requests import _get_pull_requests_query
+from github_analyser.repos import _get_repos_query
 
-repos_query = """
-    query ($pagination_cursor: String) {
-      organization(login: "alan-turing-institute") {
-        repositories(first: 100, after: $pagination_cursor, orderBy: {field: UPDATED_AT, direction: DESC}) {
-          pageInfo {
-            endCursor
-            hasNextPage
-          }
-          edges {
-            node {
-              id
-              name
-              updatedAt
-              url
-              isPrivate
-              isArchived
-              isFork
-              languages(first: 10) {
-                totalSize
-                edges {
-                  size
-                  node {
-                    name
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    """
+repos_query = _get_repos_query("alan-turing-institute")
 
 issues_query = """
 query ($pagination_cursor: String) {
@@ -107,6 +77,12 @@ request_to_response = [
                                     "isPrivate": False,
                                     "isArchived": False,
                                     "isFork": False,
+                                    "repositoryTopics": {
+                                        "nodes": [
+                                            {"topic": {"name": "research-software"}},
+                                            {"topic": {"name": "github-api"}},
+                                        ]
+                                    },
                                     "languages": {
                                         "totalSize": 50657,
                                         "edges": [

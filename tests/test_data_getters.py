@@ -16,7 +16,12 @@ def test_get_repos(mock_github):  # noqa: ARG001
         "is_private",
         "is_archived",
         "is_fork",
+        "topics",
     }
+    assert repos.loc[repos["name"] == "TestRepo01", "topics"].iloc[0] == [
+        "research-software",
+        "github-api",
+    ]
     assert "github-analyser" in repos.loc[:, "name"].values
     assert (
         "https://github.com/alan-turing-institute/github-analyser"
