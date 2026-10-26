@@ -25,6 +25,13 @@ def _get_repos_query(org_name: str):
               isPrivate
               isArchived
               isFork
+              repositoryTopics(first: 100) {{
+                nodes {{
+                  topic {{
+                    name
+                  }}
+                }}
+              }}
               languages(first: 10) {{
                 totalSize
                 edges {{
@@ -52,7 +59,7 @@ def get_repos(org_name: str, save: bool | str = False):
 
     Returns:
         pandas Dataframe: One row per repo, with columns id, name, updated_at, url,
-        is_private, is_archived, is_fork, and languages.
+        is_private, is_archived, is_fork, topics, and languages.
     """
     pages = query_with_pagination(
         _get_repos_query(org_name),
@@ -69,6 +76,8 @@ def get_repos(org_name: str, save: bool | str = False):
     flattened_edges = sum(edges, [])
     nodes = [x["node"] for x in flattened_edges]
     for node in nodes:
+        repository_topics = node.pop("repositoryTopics", {"nodes": []})
+        node["topics"] = [item["topic"]["name"] for item in repository_topics["nodes"]]
         total_size = node["languages"]["totalSize"]
         if node["isPrivate"]:
             # TODO For whatever reason the languages field is not returned for private
